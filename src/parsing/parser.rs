@@ -44,5 +44,6 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
         })
         .collect();
 
-    Ok(Collection::new(objects, linking_scripts))
+    let compile = object_commands.par_iter().map(|x| x.to_string()).collect::<Vec<String>>();
+    Ok(Collection::new(objects, linking_scripts, compile))
 }

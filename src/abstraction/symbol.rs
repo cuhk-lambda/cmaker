@@ -12,9 +12,9 @@ impl Symbol {
     pub fn new(name: String) -> Self {
         Symbol { name }
     }
-    pub fn demangled(&self) -> String {
-        cpp_demangle::Symbol::new(&self.name[..]).unwrap().to_string()
-    }
+    //pub fn demangled(&self) -> String {
+    //    cpp_demangle::Symbol::new(&self.name[..]).unwrap().to_string()
+    //}
 }
 
 fn extract_symbol(line: &str) -> String {

@@ -1,0 +1,23 @@
+name: Cmaker
+version: "1.0"
+author: Yifan ZHU <i@zhuyi.fan>
+about: cmake helper
+args:
+  - trace:
+      short: t
+      long: trace
+      value_name: PATH
+      required: true
+      help: path to the trace file
+  - work_dir:
+      short: w
+      long: work
+      value_name: PATH
+      required: true
+      help: path to the cmake work dir
+  - output:
+      short: o
+      long: output
+      value_name: PATH
+      required: true
+      help: path to the output file

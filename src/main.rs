@@ -1,7 +1,9 @@
 extern crate jemallocator;
+#[macro_use]
+extern crate lazy_static;
 
-use crate::global::{PATH, WORK_DIR};
-use crate::parsing::{Collection, parse};
+use crate::global::*;
+use crate::parsing::parse;
 
 #[global_allocator]
 static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
@@ -10,10 +12,22 @@ mod abstraction;
 mod utils;
 mod global;
 mod parsing;
+mod cli;
 
 fn main() {
-//    let res = parse(WORK_DIR, PATH).unwrap();
-//    res.store_encoded("/tmp/test").unwrap();
-    let res = Collection::load("/tmp/test");
-    println!("{:?}", res.unwrap());
+    let res = match parse(*WORK_DIR, *PATH) {
+        Ok(e) => e,
+        Err(e) => {
+            eprintln!("failed to parse the file, error: {}", e);
+            std::process::exit(1)
+        }
+    };
+
+    match res.store_encoded(*OUTPUT) {
+        Ok(_) => println!("stored to {}", *OUTPUT),
+        Err(e) => {
+            ("failed to store data, error: {}", e);
+            std::process::exit(1)
+        }
+    }
 }

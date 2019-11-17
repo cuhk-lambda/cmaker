@@ -6,8 +6,6 @@ mod path {
 
     use path_dedot::ParseDot;
 
-    use crate::global::*;
-
     pub fn work_dir(abs_path: &str) -> &str {
         return &abs_path[0..abs_path.len() - 9];
     }
