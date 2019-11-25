@@ -43,7 +43,8 @@ fn parse_target(abs_path: &str) -> Target {
                 flag = true;
                 continue;
             }
-            if !flag && (i.ends_with(".o") || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",")) {
+            if !flag && (i.ends_with(".o")
+                || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",") && i != temp) {
                 dependencies.push(path_without_dot(i));
             }
             flag = false;
