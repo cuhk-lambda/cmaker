@@ -38,13 +38,22 @@ fn parse_target(abs_path: &str) -> Target {
     let abs_path = if target_type == STATIC {
         let temp = lines[1].split_whitespace().last().unwrap();
         let mut flag = false;
+        let mut ignore = false;
         for i in lines[0].split_whitespace() {
             if i == "-o" {
                 flag = true;
                 continue;
             }
+            if i == "qc" {
+                ignore = true;
+                continue;
+            }
+            if ignore {
+                ignore = false;
+                continue;
+            }
             if !flag && (i.ends_with(".o")
-                || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",") && i != temp) {
+                || i.ends_with(".a") || i.ends_with(".so")) && !i.contains(",") {
                 dependencies.push(path_without_dot(i));
             }
             flag = false;
