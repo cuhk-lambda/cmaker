@@ -1,25 +1,28 @@
 use std::borrow::Cow;
 use std::fs::File;
 use std::io;
-use std::io::{BufRead, BufReader};
+use std::io::Read;
+
+use rayon::prelude::*;
 
 use crate::abstraction::{LinkScript, Object};
 use crate::parsing::Collection;
 use crate::utils::get_abs;
 
 pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
-    let file = File::open(path)?;
-    let reader = BufReader::new(file);
-    let all_data = reader.lines().map(|x| x.unwrap()).collect::<Vec<String>>();
+    let mut file = File::open(path)?;
+    let mut buffer = String::new();
+    file.read_to_string(&mut buffer)?;
+    let all_data = buffer.par_lines().map(|x| x.to_string()).collect::<Vec<String>>();
 
     let lines: Vec<Cow<String>> = all_data
-        .iter()
+        .par_iter()
         .filter(|x| { !x.starts_with("[") && x.is_ascii() && !x.contains("due to") })
         .map(|x| Cow::Borrowed(x))
         .collect();
 
     let object_commands: Vec<Cow<String>> = lines
-        .iter()
+        .par_iter()
         .filter(|x| x.contains(" -o "))
         .cloned()
         .collect();
@@ -30,7 +33,7 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
         .collect();
 
     let linking_commands: Vec<Cow<String>> = lines
-        .iter()
+        .par_iter()
         .filter(|x| x.contains("link.txt"))
         .cloned()
         .collect();
@@ -42,6 +45,6 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
         })
         .collect();
 
-    let compile = object_commands.iter().map(|x| x.to_string()).collect::<Vec<String>>();
+    let compile = object_commands.par_iter().map(|x| x.to_string()).collect::<Vec<String>>();
     Ok(Collection::new(objects, linking_scripts, compile))
 }
