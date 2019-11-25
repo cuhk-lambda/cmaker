@@ -37,32 +37,32 @@ fn parse_target(abs_path: &str) -> Target {
     let mut dependencies = Vec::new();
     let abs_path = if target_type == STATIC {
         let temp = lines[1].split_whitespace().last().unwrap();
-        let mut flag = 0;
+        let mut flag = false;
         for i in lines[0].split_whitespace() {
-            if i == "qc" {
-                flag = 1;
-            } else if flag == 1 {
-                flag = 2;
-            } else if flag == 2 {
-                dependencies.push(path_without_dot(work_dir(abs_path), i));
+            if i == "-o" {
+                flag = true;
+                continue;
             }
+            if !flag && (i.ends_with(".o") || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",")) {
+                dependencies.push(path_without_dot(i));
+            }
+            flag = false;
         }
-        path_without_dot(work_dir(abs_path), temp)
+        path_without_dot(temp)
     } else {
-        let mut flag = 0;
+        let mut flag = false;
         let mut name = None;
         for i in lines[0].split_whitespace() {
             if i == "-o" {
-                flag = 1;
-            } else if flag == 1 {
-                name.replace(path_without_dot(work_dir(abs_path), i));
-                flag = 2;
-            } else if flag == 2 && target_type == SHARED {
-                dependencies.push(path_without_dot(work_dir(abs_path), i));
-            } else if flag == 2 && target_type == EXEC {
-                flag = 3;
-            } else if flag == 3 && target_type == EXEC {
-                dependencies.push(path_without_dot(work_dir(abs_path), i));
+                flag = true;
+                continue;
+            } else if flag {
+                name.replace(path_without_dot(i));
+                flag = false;
+                continue;
+            }
+            if !flag && (i.ends_with(".o") || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",")) {
+                dependencies.push(path_without_dot(i));
             }
         }
         name.expect("unable to get name")

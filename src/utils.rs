@@ -2,18 +2,16 @@ pub use path::*;
 
 mod path {
     use std::borrow::Cow;
-    use std::path::Path;
 
-    use path_dedot::ParseDot;
-
-    pub fn work_dir(abs_path: &str) -> &str {
-        return &abs_path[0..abs_path.len() - 9];
-    }
-
-    pub fn path_without_dot<'a>(work_dir: &str, rev_path: &str) -> String {
-        let w = Path::new(work_dir);
-        let r = Path::new(rev_path);
-        w.join(r).parse_dot().unwrap().to_str().unwrap().to_string()
+    pub fn path_without_dot<'a>(rev_path: &str) -> String {
+        match std::fs::canonicalize(rev_path) {
+            Ok(e) => e.to_str().unwrap().to_string(),
+            Err(e) => {
+                println!("current dir: {}", std::env::current_dir().unwrap().to_str().unwrap());
+                println!("failed path: {}, {}", rev_path, e);
+                std::process::exit(0)
+            }
+        }
     }
 
 
@@ -40,6 +38,8 @@ mod path {
         for i in 3..length {
             if length - i >= 3 && &content[i..i + 3] == " &&" {
                 buffer.push('/' as u8);
+                let path = String::from_utf8(buffer.clone()).unwrap();
+                std::env::set_current_dir(path.as_str()).expect(format!("unable to change dir to {}", path).as_str());
                 state = 1;
             }
             if i > sep.len() && &content[i - sep.len()..i] == sep {

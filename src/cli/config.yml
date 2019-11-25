@@ -18,6 +18,6 @@ args:
   - output:
       short: o
       long: output
-      value_name: PATH
+      value_name: ABS_PATH
       required: true
-      help: path to the output file
+      help: absolute path to the output file
