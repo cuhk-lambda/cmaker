@@ -78,6 +78,7 @@ fn parse_target(abs_path: &str) -> Target {
         name.expect("unable to get name")
     };
     let name = get_last(abs_path.as_str());
+    dependencies.dedup_by(|x, y| x == y);
     Target {
         name,
         abs_path,
