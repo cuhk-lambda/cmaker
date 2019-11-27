@@ -7,7 +7,7 @@ use rayon::prelude::*;
 
 use crate::abstraction::{LinkScript, Object};
 use crate::parsing::Collection;
-use crate::utils::get_abs;
+use crate::utils::{get_abs, output_canonicalize};
 
 pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
     let mut file = File::open(path)?;
@@ -45,6 +45,7 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
         })
         .collect();
 
-    let compile = object_commands.par_iter().map(|x| x.to_string()).collect::<Vec<String>>();
+    let _compile = object_commands.par_iter().map(|x| x.to_string()).collect::<Vec<String>>();
+    let compile = _compile.iter().map(|x| output_canonicalize(x)).collect();
     Ok(Collection::new(objects, linking_scripts, compile))
 }

@@ -3,6 +3,30 @@ pub use path::*;
 mod path {
     use std::borrow::Cow;
 
+    pub fn output_canonicalize(x: &str) -> String {
+        let mut state = 0;
+        let mut res = Vec::new();
+        for i in x.split_ascii_whitespace() {
+            let mut flag = false;
+            if i == "cd" {
+                state = 1;
+            } else if state == 1 {
+                std::env::set_current_dir(i).expect("unable to switch dir");
+                state = 0;
+            } else if i == "-o" {
+                state = 2;
+            } else if state == 2 {
+                flag = true;
+                state = 0;
+            }
+            if flag {
+                res.push(std::fs::canonicalize(i).unwrap().to_str().unwrap().to_string())
+            } else {
+                res.push(i.to_string())
+            }
+        }
+        res.join(" ")
+    }
     pub fn path_without_dot<'a>(rev_path: &str) -> String {
         match std::fs::canonicalize(rev_path) {
             Ok(e) => e.to_str().unwrap().to_string(),
