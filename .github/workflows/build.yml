@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Build Dependencies
-        run: apt install make
+        run: sudo apt install make
       - name: Install Minimal Rust Nightly
         uses: actions-rs/toolchain@v1
         with:
