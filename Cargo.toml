@@ -18,5 +18,5 @@ simd-json = "0.1.26"
 serde_json = "1.0.41"
 hashbrown = "0.6.3"
 lazy_static = "*"
-yaml-rust = "*"
+yaml-rust = "0.3.5"
 serde = {version = "1.0.102", features = ["derive"]}
