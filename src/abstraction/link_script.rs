@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::Read;
 
+use rayon::prelude::*;
 use serde::*;
 
 use crate::abstraction::{EXEC, SHARED, STATIC, Target};
@@ -79,6 +80,7 @@ fn parse_target(abs_path: &str) -> Target {
     };
     let name = get_last(abs_path.as_str());
     dependencies.dedup_by(|x, y| x == y);
+    let dependencies = dependencies.into_par_iter().filter(|x| x != &abs_path).collect();
     Target {
         name,
         abs_path,
