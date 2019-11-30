@@ -23,6 +23,7 @@ fn extract_symbol(line: &str) -> String {
     while bytes[i] != ' ' as u8 {
         i += 1;
     }
+
     String::from(&line[0..i])
 }
 
@@ -35,12 +36,12 @@ pub fn load_symbol(abs_path: &str) -> (Vec<Symbol>, Vec<Symbol>) {
         .expect("failed to execute process");
     let stdout = String::from_utf8(output.stdout).unwrap();
     (stdout.par_lines()
-         .filter(|x| x.contains(" T "))
+         .filter(|x| memchr::memchr3(b' ', b'T', b' ', x.as_bytes()).is_some())
          .map(|x| extract_symbol(x))
          .map(|x| Symbol::new(x))
          .collect(),
      stdout.par_lines()
-         .filter(|x| x.contains(" U "))
+         .filter(|x| memchr::memchr3(b' ', b'U', b' ', x.as_bytes()).is_some())
          .map(|x| extract_symbol(x))
          .map(|x| Symbol::new(x))
          .collect())

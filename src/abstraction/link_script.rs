@@ -54,7 +54,7 @@ fn parse_target(abs_path: &str) -> Target {
                 continue;
             }
             if !flag && (i.ends_with(".o")
-                || i.ends_with(".a") || i.ends_with(".so")) && !i.contains(",") {
+                || i.ends_with(".a") || i.ends_with(".so")) && memchr::memchr(b',', i.as_bytes()).is_none() {
                 dependencies.push(path_without_dot(i));
             }
             flag = false;
@@ -72,7 +72,8 @@ fn parse_target(abs_path: &str) -> Target {
                 flag = false;
                 continue;
             }
-            if !flag && (i.ends_with(".o") || i.ends_with(".a") || i.ends_with(".so")) && !(i.contains(",")) {
+            if !flag && (i.ends_with(".o") || i.ends_with(".a") || i.ends_with(".so")) &&
+                memchr::memchr(b',', i.as_bytes()).is_none() {
                 dependencies.push(path_without_dot(i));
             }
         }

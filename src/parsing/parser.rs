@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io;
 use std::io::Read;
 
+use memchr::memchr3;
 use rayon::prelude::*;
 
 use crate::abstraction::{LinkScript, Object};
@@ -23,7 +24,7 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
 
     let object_commands: Vec<Cow<String>> = lines
         .par_iter()
-        .filter(|x| x.contains(" -o "))
+        .filter(|x| memchr3(b'-', b'o', b' ', x.as_bytes()).is_some())
         .cloned()
         .collect();
 
