@@ -1,6 +1,6 @@
 [package]
 name = "cmaker"
-version = "1.2.0"
+version = "1.2.5"
 authors = ["schrodingerzhu <i@zhuyi.fan>"]
 edition = "2018"
 
@@ -10,13 +10,11 @@ opt-level = 3
 
 [dependencies]
 rayon = "1.2.0"
-regex = "1.3.1"
-cpp_demangle = "0.2.14"
 clap = { version = "2.33.0", features = ["yaml"]}
 jemallocator = "0.3.2"
-simd-json = "0.1.26"
 serde_json = "1.0.41"
-hashbrown = "0.6.3"
 lazy_static = "*"
 yaml-rust = "0.3.5"
+memchr = "2.2.1"
+twoway = "0.2.1"
 serde = {version = "1.0.102", features = ["derive"]}

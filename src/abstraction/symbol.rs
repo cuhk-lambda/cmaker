@@ -2,6 +2,7 @@ use std::process::Command;
 
 use rayon::prelude::*;
 use serde::*;
+use twoway::find_bytes;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Symbol {
@@ -23,6 +24,7 @@ fn extract_symbol(line: &str) -> String {
     while bytes[i] != ' ' as u8 {
         i += 1;
     }
+
     String::from(&line[0..i])
 }
 
@@ -35,12 +37,12 @@ pub fn load_symbol(abs_path: &str) -> (Vec<Symbol>, Vec<Symbol>) {
         .expect("failed to execute process");
     let stdout = String::from_utf8(output.stdout).unwrap();
     (stdout.par_lines()
-         .filter(|x| x.contains(" T "))
+         .filter(|x| find_bytes(x.as_bytes(), b" T ").is_some())
          .map(|x| extract_symbol(x))
          .map(|x| Symbol::new(x))
          .collect(),
      stdout.par_lines()
-         .filter(|x| x.contains(" U "))
+         .filter(|x| find_bytes(x.as_bytes(), b" U ").is_some())
          .map(|x| extract_symbol(x))
          .map(|x| Symbol::new(x))
          .collect())

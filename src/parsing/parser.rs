@@ -4,6 +4,7 @@ use std::io;
 use std::io::Read;
 
 use rayon::prelude::*;
+use twoway::rfind_bytes;
 
 use crate::abstraction::{LinkScript, Object};
 use crate::parsing::Collection;
@@ -23,7 +24,7 @@ pub fn parse(work_dir: &str, path: &str) -> io::Result<Collection> {
 
     let object_commands: Vec<Cow<String>> = lines
         .par_iter()
-        .filter(|x| x.contains(" -o "))
+        .filter(|x| rfind_bytes(x.as_bytes(), b" -o ").is_some())
         .cloned()
         .collect();
 
