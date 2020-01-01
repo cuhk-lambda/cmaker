@@ -7,6 +7,8 @@ pub struct Target {
     pub dependencies: Vec<String>,
     // will changed later
     pub target_type: u8,
+    pub linking_args: Vec<String>,
+    pub ranlib_args: Vec<String>,
 }
 
 pub static EXEC: u8 = 0;

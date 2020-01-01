@@ -36,16 +36,40 @@ fn parse_target(abs_path: &str) -> Target {
         EXEC
     };
     let mut dependencies = Vec::new();
+    let mut linking_args = Vec::new();
+    let mut ranlib_args = Vec::new();
     let abs_path = if target_type == STATIC {
         let temp = lines[1].split_whitespace().last().unwrap();
         let mut flag = false;
         let mut ignore = false;
+        let mut count = 0;
+        let mut plugin = false;
+        let mut plugin2 = false;
+        for i in lines[1].split_ascii_whitespace() {
+            if plugin2 {
+                plugin2 = false;
+                ranlib_args.push(String::from(i));
+                continue;
+            }
+            if i.starts_with("-") {
+                ranlib_args.push(String::from(i));
+                if i == "--plugin" {
+                    plugin2 = true;
+                }
+            }
+        }
         for i in lines[0].split_whitespace() {
             if i == "-o" {
                 flag = true;
                 continue;
             }
-            if i == "qc" {
+            if plugin {
+                plugin = false;
+                linking_args.push(String::from(i));
+                continue;
+            }
+            if count == 1 {
+                linking_args.push(String::from(i));
                 ignore = true;
                 continue;
             }
@@ -57,7 +81,14 @@ fn parse_target(abs_path: &str) -> Target {
                 || i.ends_with(".a") || i.ends_with(".so")) && memchr::memchr(b',', i.as_bytes()).is_none() {
                 dependencies.push(path_without_dot(i));
             }
+            if !flag && i.starts_with("-") {
+                if i == "--plugin" {
+                    plugin = true;
+                }
+                linking_args.push(String::from(i));
+            }
             flag = false;
+            count += 1;
         }
         path_without_dot(temp)
     } else {
@@ -76,6 +107,9 @@ fn parse_target(abs_path: &str) -> Target {
                 memchr::memchr(b',', i.as_bytes()).is_none() {
                 dependencies.push(path_without_dot(i));
             }
+            if !flag && i.starts_with("-") {
+                linking_args.push(String::from(i));
+            }
         }
         name.expect("unable to get name")
     };
@@ -87,5 +121,7 @@ fn parse_target(abs_path: &str) -> Target {
         abs_path,
         dependencies,
         target_type,
+        linking_args,
+        ranlib_args,
     }
 }

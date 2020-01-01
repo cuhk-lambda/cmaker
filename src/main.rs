@@ -1,4 +1,3 @@
-extern crate jemallocator;
 #[macro_use]
 extern crate lazy_static;
 
@@ -6,7 +5,7 @@ use crate::global::*;
 use crate::parsing::parse;
 
 #[global_allocator]
-static ALLOC: jemallocator::Jemalloc = jemallocator::Jemalloc;
+static ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 mod abstraction;
 mod utils;
