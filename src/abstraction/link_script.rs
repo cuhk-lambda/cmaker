@@ -59,6 +59,7 @@ fn parse_target(abs_path: &str) -> Target {
             }
         }
         for i in lines[0].split_whitespace() {
+            count += 1;
             if i == "-o" {
                 flag = true;
                 continue;
@@ -68,7 +69,7 @@ fn parse_target(abs_path: &str) -> Target {
                 linking_args.push(String::from(i));
                 continue;
             }
-            if count == 1 {
+            if count == 2 {
                 linking_args.push(String::from(i));
                 ignore = true;
                 continue;
@@ -88,7 +89,6 @@ fn parse_target(abs_path: &str) -> Target {
                 linking_args.push(String::from(i));
             }
             flag = false;
-            count += 1;
         }
         path_without_dot(temp)
     } else {
@@ -114,6 +114,7 @@ fn parse_target(abs_path: &str) -> Target {
         name.expect("unable to get name")
     };
     let name = get_last(abs_path.as_str());
+    dependencies.sort_unstable();
     dependencies.dedup_by(|x, y| x == y);
     let dependencies = dependencies.into_par_iter().filter(|x| x != &abs_path).collect();
     Target {
